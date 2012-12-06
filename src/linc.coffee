@@ -12,6 +12,7 @@ Linc._functions = {}
 Linc._defaults =
   namespace : []
   context   : root
+  exclude   : []
 
 # Linc Methods
 
@@ -45,6 +46,7 @@ Linc.run = ( args... ) ->
   all     = o.all
   data    = o.data
   nsOnly  = o.namespaceOnly
+  exclude = o.exclude?  and o.exclude.split(' ') or @_defaults.exclude
 
   if all
     for own key, ns of @_functions
@@ -53,11 +55,12 @@ Linc.run = ( args... ) ->
 
   ( nMap.namespaces ?= [] ).push null unless nsOnly
   if nMap.name
-    @_call @get( args[0] ), context, data
+    @_call @get( args[0] ), context, data unless nMap.name in exclude
   else
     for ns in nMap.namespaces
+      continue if ".#{ns}" in exclude
       for own name, module of @_functions[ ns ] ? @_functions
-        @_call module, context, data
+        @_call module, context, data unless name in exclude
   @
 
 Linc.setDefaults = ( o ) ->

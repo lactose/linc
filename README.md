@@ -30,6 +30,7 @@ Run Options
 * `all` Calls all widgets, namespaced and unscoped.
 * `namespaceOnly` Calls only the namespace defined
 * `data` Data to be sent as arguments in function calls
+* `exclude` widgets or namespaces to be excluded during runtime
 
 Examples
 ====
@@ -70,6 +71,10 @@ Examples
   // both 'register' and 'validation' functions are executed, since
   // 'selectParent' is only called once, with 'document' as context
   Linc.run('.account', { context: document });
+
+  // Runs all widgets in all namespaces except for the .account
+  // namespace
+  Linc.run({ all: true, exclude: '.account'});
 
   // You can also pass data to all modules called
   Linc.add('header.updates', function ( data ) {

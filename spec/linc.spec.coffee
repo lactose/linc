@@ -5,6 +5,7 @@ argTest = null
 bCalls = 0
 a_fn = jasmine.createSpy()
 b_fn = () -> bCalls++
+c_fn = jasmine.createSpy()
 x_fn = jasmine.createSpy()
 y_fn = jasmine.createSpy()
 z_fn = () ->
@@ -61,6 +62,13 @@ describe 'run', ->
       Linc.run()
       Linc.run()
       expect( bCalls ).toBe( 1 )
+    it 'should not run excluded widgets', ->
+      wC = Linc.add 'widgetC', c_fn
+      Linc.run({exclude: 'widgetC'});
+      expect( a_fn ).toHaveBeenCalled()
+      expect( c_fn ).not.toHaveBeenCalled()
+      Linc.run();
+      expect( c_fn ).toHaveBeenCalled()
 
   describe 'running with namespaces', ->
     w_fn = null
@@ -79,6 +87,19 @@ describe 'run', ->
       Linc.add 'widgetW.namespaceW', w_fn
       Linc.add 'widgetX.namespaceA', x_fn
       Linc.add 'widgetY.namespaceB', y_fn
+
+    it 'should not call excluded widgets', ->
+      Linc.run('.namespaceB', {exclude: 'widgetA widgetU'})
+      expect( a_fn ).not.toHaveBeenCalled()
+      expect( u_fn ).not.toHaveBeenCalled()
+      expect( y_fn ).toHaveBeenCalled()
+
+    it 'should not call excluded namespaces', ->
+      Linc.run({all: true, exclude: '.namespaceB'})
+      expect( y_fn ).not.toHaveBeenCalled()
+      expect( w_fn ).toHaveBeenCalled()
+      expect( a_fn ).toHaveBeenCalled()
+      expect( x_fn ).toHaveBeenCalled()
 
     it 'should call specified namespace and unscoped', ->
       Linc.run('.namespaceA')
